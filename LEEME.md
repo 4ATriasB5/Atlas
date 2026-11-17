@@ -1,7 +1,7 @@
 # Atlas — guía rápida
 
 Atlas es una app web para entender la economía mundial de forma visual.
-Hechas la **fase 1** (mapa mundial real + ficha de país) y la **fase 2** (fondos y ETFs con buscador inverso).
+Hechas la **fase 1** (mapa mundial real + ficha de país) la **fase 2** (fondos y ETFs con buscador inverso) y la **parte A de la fase 3** (empresas, buscador con filtros y «Mi lista»).
 
 ## Cómo abrir la app en tu ordenador
 
@@ -94,8 +94,47 @@ npm run fondos
 
 No suele hacer falta: GitHub lo hace solo cada lunes.
 
+## Empresas (fase 3, parte A)
+
+Sección **Empresas** (buscador con filtros), **ficha de empresa** y **Mi lista**.
+
+- **Qué empresas:** las 500 del S&P 500 (las mayores de la bolsa de EE. UU.). La lista sale de la cartera
+  del fondo iShares Core S&P 500 que ya descargamos en la fase 2.
+- **Precio e indicadores:** Finnhub, con la misma clave de la capa «Bolsa hoy». Su plan gratuito solo
+  cubre EE. UU.; por eso las empresas europeas o asiáticas tienen una ficha reducida, sin precio.
+- **Ingresos y beneficios de cada año:** SEC EDGAR, el registro oficial de EE. UU. No necesita clave, pero
+  exige un correo de contacto: va en `.env` como `SEC_CONTACTO=` y como secreto `SEC_CONTACTO` en GitHub.
+  Para renovar solo esta parte: `node recolector/empresas.mjs --solo-cuentas` (menos de un minuto).
+  Unos pocos bancos y empresas declaran los ingresos con otras etiquetas y salen sin ese gráfico.
+- **Gráfico de precios (5 años):** Twelve Data. Necesita una clave gratuita `TWELVEDATA_API_KEY` en el
+  archivo `.env` y como secreto en GitHub, igual que la de Finnhub. Sin ella, todo funciona menos el gráfico.
+  El plan gratuito da 800 consultas al día, así que los historiales se renuevan por tandas (unos 110 por noche).
+- **Mi lista:** se guarda solo en el navegador del dispositivo donde la creas. La sincronización entre
+  dispositivos y las alertas llegan en la parte B.
+
+**Actualizar a mano** (tarda unos 10 minutos; la primera vez, cerca de 45):
+
+```
+npm run empresas
+```
+
+No suele hacer falta: GitHub lo hace solo cada noche.
+
+## Cuenta, lista sincronizada y alertas (fase 3, parte B)
+
+Con el botón **Entrar** (arriba) se entra con el correo, sin contraseña: llega un enlace y al pulsarlo ya estás dentro.
+Con la cuenta abierta, «Mi lista» se ve igual en todos los dispositivos y se pueden crear **alertas** desde la ficha
+de cada empresa. Los avisos aparecen dentro de la app (campana de arriba y pantalla «Mi lista»); se comprueban al
+abrir la app, con el precio de cierre del día.
+
+- **Dónde se guarda:** en Supabase (base de datos gratuita en la nube). Cada persona solo ve sus propios datos.
+- **Cómo se activa:** los dos datos del proyecto de Supabase van en `src/nube-config.ts`, y las tablas se crean
+  pegando `nube/tablas.sql` en el «SQL Editor» de Supabase. Mientras ese archivo esté vacío, el botón «Entrar»
+  no aparece y la lista se guarda solo en el dispositivo.
+- **Límite del plan gratuito:** Supabase envía pocos correos por hora (suficiente para uso personal).
+
 ## Lo que todavía no hace (fases siguientes)
 
-- **Fase 3:** ficha de empresa, precios históricos, «Mi lista» y alertas.
+- **Avisos por correo o notificaciones en el móvil:** de momento los avisos solo se ven dentro de la app.
 - **Fase 4:** noticias explicadas, sectores y «¿por qué se ha movido?».
 - **Fase 5:** radar de emergentes, tiempo real y X.

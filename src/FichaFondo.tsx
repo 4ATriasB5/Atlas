@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fechaCorta, numero } from './datos';
 import { type Carteras, type DatosFondos, type Trozo, cargarCarteras, cargarFondos, comisionTexto, costeAnual, sinAcentos } from './fondos';
+import { type DatosEmpresas, cargarEmpresas, enlaceEmpresa } from './empresas';
 import { Brokers } from './PantallaFondos';
 
 function Barras({ trozos, decimales = 1 }: { trozos: Trozo[]; decimales?: number }) {
@@ -27,12 +28,14 @@ function Barras({ trozos, decimales = 1 }: { trozos: Trozo[]; decimales?: number
 export function FichaFondo({ isin, experto }: { isin: string; experto: boolean }) {
   const [datos, setDatos] = useState<DatosFondos | null | undefined>(undefined);
   const [carteras, setCarteras] = useState<Carteras | null>(null);
+  const [bolsa, setBolsa] = useState<DatosEmpresas | null>(null);
   const [filtro, setFiltro] = useState('');
   const [todas, setTodas] = useState(false);
 
   useEffect(() => {
     cargarFondos().then(setDatos);
     cargarCarteras().then(setCarteras);
+    cargarEmpresas().then(setBolsa);
   }, []);
   useEffect(() => {
     setFiltro('');
@@ -177,7 +180,7 @@ export function FichaFondo({ isin, experto }: { isin: string; experto: boolean }
                 {visibles.slice(0, 400).map((x) => (
                   <li key={x.e.id}>
                     <span>
-                      {x.e.nombre}
+                      <a href={enlaceEmpresa(x.e.nombre, bolsa)}>{x.e.nombre}</a>
                       <span className="tenue pequeño">
                         {' '}
                         · {x.e.pais}

@@ -13,6 +13,7 @@ import {
   comisionTexto,
   sinAcentos,
 } from './fondos';
+import { type DatosEmpresas, cargarEmpresas, enlaceEmpresa } from './empresas';
 
 const TODOS = 'Todos';
 
@@ -42,6 +43,7 @@ export function Brokers({ fondo }: { fondo: Fondo }) {
 export function PantallaFondos({ experto }: { experto: boolean }) {
   const [datos, setDatos] = useState<DatosFondos | null | undefined>(undefined);
   const [carteras, setCarteras] = useState<Carteras | null>(null);
+  const [bolsa, setBolsa] = useState<DatosEmpresas | null>(null);
   const [texto, setTexto] = useState('');
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [nombre, setNombre] = useState('');
@@ -53,6 +55,7 @@ export function PantallaFondos({ experto }: { experto: boolean }) {
   useEffect(() => {
     cargarFondos().then(setDatos);
     cargarCarteras().then(setCarteras);
+    cargarEmpresas().then(setBolsa);
   }, []);
 
   const fondos = datos?.fondos ?? [];
@@ -161,7 +164,8 @@ export function PantallaFondos({ experto }: { experto: boolean }) {
             <p className="resultado-inverso">
               <strong>{empresa.nombre}</strong> ({empresa.pais}, {empresa.sector.toLowerCase()}) está en{' '}
               <strong>{pesos.size}</strong> de los {conCartera} fondos con cartera publicada.
-              {!experto && ' El «peso» es qué parte del dinero del fondo está invertida en ella.'}
+              {!experto && ' El «peso» es qué parte del dinero del fondo está invertida en ella.'}{' '}
+              <a href={enlaceEmpresa(empresa.nombre, bolsa)}>Ver la ficha de la empresa</a>.
             </p>
           )}
         </div>

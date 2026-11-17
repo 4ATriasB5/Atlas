@@ -4,8 +4,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ClaveCapa } from './capas';
 import { type Datos, cargarDatos, fechaCorta, paisesConDatos, pctSigno } from './datos';
+import { BotonCuenta, PanelAvisos } from './Cuenta';
+import { useLista } from './empresas';
+import { FichaEmpresa } from './FichaEmpresa';
 import { FichaFondo } from './FichaFondo';
 import { FichaPais } from './FichaPais';
+import { PantallaEmpresas } from './PantallaEmpresas';
 import { PantallaFondos } from './PantallaFondos';
 import { PantallaMapa } from './PantallaMapa';
 
@@ -38,8 +42,6 @@ function useRuta(): string {
 }
 
 const PROXIMAS = [
-  ['Empresas', 'Fase 3'],
-  ['Mi lista', 'Fase 3'],
   ['Sectores', 'Fase 4'],
   ['Radar de emergentes', 'Fase 5'],
 ];
@@ -52,6 +54,7 @@ export function App() {
   const [seleccion, setSeleccion] = useState(() => recordar('atlas-pais', 'ESP'));
   const [busqueda, setBusqueda] = useState('');
   const ruta = useRuta();
+  const miLista = useLista();
 
   useEffect(() => {
     cargarDatos()
@@ -85,7 +88,19 @@ export function App() {
   const isoFicha = enFicha ? ruta.split('/')[2]?.toUpperCase() : null;
   const enFondos = ruta === '/fondos' || ruta.startsWith('/fondo/');
   const isinFondo = ruta.startsWith('/fondo/') ? ruta.split('/')[2]?.toUpperCase() : null;
-  const enMapa = !enFicha && !enFondos;
+  const enEmpresas = ruta === '/empresas' || ruta.startsWith('/empresa/');
+  // La ficha de empresa va por símbolo (#/empresa/AAPL) o, si Atlas no tiene su precio, por nombre (#/empresa/~Nombre).
+  let claveEmpresa: string | null = null;
+  if (ruta.startsWith('/empresa/')) {
+    try {
+      claveEmpresa = decodeURIComponent(ruta.slice('/empresa/'.length));
+    } catch {
+      claveEmpresa = ruta.slice('/empresa/'.length);
+    }
+  }
+  const enLista = ruta === '/lista';
+  const sinDatosGenerales = enFondos || enEmpresas || enLista; // estas pantallas cargan sus propios datos
+  const enMapa = !enFicha && !sinDatosGenerales;
   const hayBolsa = !!datos && Object.keys(datos.bolsas).length > 0;
   // Si hay datos de bolsa, el mapa arranca con esa capa; si no, con el crecimiento del PIB.
   const capaActiva: ClaveCapa = capa ?? (hayBolsa ? 'bolsa' : 'crecimiento');
@@ -133,6 +148,7 @@ export function App() {
             Modo experto
           </button>
         </div>
+        <BotonCuenta />
         <span className="actualizado">
           <i />
           {datos ? `Datos del ${fechaCorta(datos.actualizado)}` : 'Cargando…'}
@@ -162,6 +178,13 @@ export function App() {
           <a href="#/fondos" className={enFondos ? 'activo' : ''} aria-current={enFondos ? 'page' : undefined}>
             Fondos y ETFs
           </a>
+          <a href="#/empresas" className={enEmpresas ? 'activo' : ''} aria-current={enEmpresas ? 'page' : undefined}>
+            Empresas
+          </a>
+          <a href="#/lista" className={enLista ? 'activo' : ''} aria-current={enLista ? 'page' : undefined}>
+            Mi lista
+            {miLista.length > 0 && <small> · {miLista.length}</small>}
+          </a>
           {PROXIMAS.map(([nombre, fase]) => (
             <span key={nombre} className="menu-proximo" aria-disabled="true">
               {nombre}
@@ -177,9 +200,12 @@ export function App() {
               <p>{error}</p>
             </section>
           )}
-          {!datos && !error && !enFondos && <section className="panel tenue">Cargando datos…</section>}
+          {!datos && !error && !sinDatosGenerales && <section className="panel tenue">Cargando datos…</section>}
           {datos && enFicha && isoFicha && <FichaPais datos={datos} iso3={isoFicha} experto={experto} />}
           {enFondos && !error && (isinFondo ? <FichaFondo isin={isinFondo} experto={experto} /> : <PantallaFondos experto={experto} />)}
+          {enEmpresas && !error && (claveEmpresa ? <FichaEmpresa clave={claveEmpresa} experto={experto} /> : <PantallaEmpresas experto={experto} soloLista={false} />)}
+          {enLista && !error && <PanelAvisos />}
+          {enLista && !error && <PantallaEmpresas experto={experto} soloLista />}
           {datos && enMapa && (
             <PantallaMapa
               datos={datos}

@@ -918,3 +918,299 @@ select {
     min-width: 140px;
   }
 }
+
+/* ── Empresas (fase 3) ── */
+.estrella {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--tenue);
+  font: inherit;
+  cursor: pointer;
+}
+.estrella:hover {
+  color: var(--naranja-claro);
+}
+.estrella.dentro {
+  color: var(--naranja);
+}
+.estrella.con-texto {
+  margin-top: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--borde-fuerte);
+  color: var(--texto-2);
+}
+.estrella.con-texto.dentro {
+  border-color: var(--naranja);
+  color: var(--naranja);
+}
+.tabla th.col-estrella,
+.tabla td.col-estrella {
+  width: 44px;
+  min-width: 0;
+  padding: 4px 0 4px 4px;
+}
+.tabla td.col-estrella + td {
+  min-width: 190px;
+}
+.ordenar {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.ordenar:hover {
+  color: var(--texto);
+}
+.menu a small {
+  color: var(--tenue);
+}
+.precio-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.precio-grafico {
+  position: relative;
+  height: 260px;
+  touch-action: pan-y;
+}
+.precio-grafico svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.precio-tope {
+  position: absolute;
+  left: 0;
+  font-size: 12px;
+  color: var(--tenue);
+  background: rgba(22, 27, 34, 0.8);
+  padding: 0 4px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.precio-tope.arriba {
+  top: 0;
+}
+.precio-tope.abajo {
+  bottom: 0;
+}
+.precio-raya {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--borde-fuerte);
+  pointer-events: none;
+}
+.precio-punto {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--azul-claro);
+  border: 2px solid var(--panel);
+  pointer-events: none;
+}
+.precio-fechas {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 6px;
+  border-top: 1px solid var(--borde-fuerte);
+}
+.rango {
+  margin-top: 18px;
+  max-width: 560px;
+}
+.rango-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.rango-barra {
+  position: relative;
+  flex: 1;
+  height: 6px;
+}
+.rango-barra i {
+  position: absolute;
+  top: -5px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: var(--naranja);
+  border: 3px solid var(--panel);
+}
+.grafico-bajo {
+  height: 150px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+.indicadores {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+.indicador {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.indicador-fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.indicador-fila strong {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.barra-fina,
+.barra-fina .barra-relleno {
+  height: 4px;
+}
+.barra-fina {
+  margin-top: 6px;
+  min-width: 120px;
+}
+.posiciones li > span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  .tabla td.col-estrella + td {
+    min-width: 130px;
+  }
+  .precio-grafico {
+    height: 200px;
+  }
+}
+.ficha-cabecera > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* ── Cuenta, avisos y alertas (fase 3, parte B) ── */
+.sesion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.campana {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  color: var(--texto-2);
+}
+.campana:hover {
+  color: var(--texto);
+  background: var(--panel);
+}
+.campana b {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--naranja, #f59e42);
+  color: var(--fondo);
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+}
+.sesion-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: min(320px, calc(100vw - 32px));
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--borde-fuerte);
+  background: var(--panel);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+.sesion-panel p {
+  margin: 0 0 10px;
+}
+.sesion-panel .campo {
+  margin-bottom: 10px;
+}
+.avisos {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+.avisos li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.avisos li > span:first-child {
+  min-width: 0;
+}
+.avisos li > :last-child {
+  flex: none;
+}
+.etiqueta-nuevo {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 8px;
+  border-radius: 9px;
+  background: var(--naranja, #f59e42);
+  color: var(--fondo);
+  font-size: 11px;
+}
+.con-margen {
+  margin-top: 24px;
+}
+.alerta-nueva {
+  margin-bottom: 12px;
+}
+.alerta-nueva .boton-capa {
+  height: 40px;
+}
+@media (max-width: 720px) {
+  /* En el móvil el panel ocupa el ancho de la pantalla, debajo de la barra. */
+  .barra {
+    position: relative;
+  }
+  .sesion {
+    position: static;
+  }
+  .sesion-panel {
+    top: 100%;
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
+}
