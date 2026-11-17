@@ -82,7 +82,15 @@ export async function cargarDatos(): Promise<Datos> {
     porNum,
     bolsas: b?.paises ?? {},
     bolsasExtra: b?.extra ?? {},
-    bolsasActualizado: b?.actualizado ?? null,
+    // Fecha de la última sesión de bolsa (no la de descarga, que puede ser del día siguiente).
+    bolsasActualizado:
+      Object.values(b?.paises ?? {})
+        .map((x) => x.fecha)
+        .filter((f): f is string => !!f)
+        .sort()
+        .pop() ??
+      b?.actualizado ??
+      null,
     comercio: c?.comercio ?? {},
   };
 }

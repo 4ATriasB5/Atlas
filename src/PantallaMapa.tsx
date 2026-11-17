@@ -120,7 +120,7 @@ export function PantallaMapa({ datos, experto, capa: claveCapa, alCambiarCapa, s
           </div>
           <p className="tenue pequeño fuente">
             {capa.clave === 'bolsa'
-              ? `Fuente: Finnhub. Se mide con el fondo cotizado (ETF) que replica la bolsa de cada país; cotiza en dólares en EE. UU., así que incluye el efecto del cambio de moneda.${datos.bolsasActualizado ? ` Datos del ${fechaCorta(datos.bolsasActualizado)}.` : ''}`
+              ? `Fuente: Finnhub. Se mide con el fondo cotizado (ETF) que replica la bolsa de cada país; cotiza en dólares en EE. UU., así que incluye el efecto del cambio de moneda.${datos.bolsasActualizado ? ` Sesión del ${fechaCorta(datos.bolsasActualizado)}.` : ''}`
               : 'Fuente: Banco Mundial. Son datos anuales: cada país muestra su último año publicado.'}
           </p>
         </div>

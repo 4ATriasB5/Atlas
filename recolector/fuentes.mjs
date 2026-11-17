@@ -22,7 +22,6 @@ export const ETF_PAISES = [
   ['ARG', 'ARGT', 'Global X MSCI Argentina'],
   ['CHL', 'ECH', 'iShares MSCI Chile'],
   ['PER', 'EPU', 'iShares MSCI Peru'],
-  ['COL', 'GXG', 'Global X MSCI Colombia'],
   ['ESP', 'EWP', 'iShares MSCI Spain'],
   ['DEU', 'EWG', 'iShares MSCI Germany'],
   ['FRA', 'EWQ', 'iShares MSCI France'],
