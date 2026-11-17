@@ -1,0 +1,61 @@
+# Este archivo le dice a GitHub que, cada día y cada vez que se suba un cambio:
+#   1) descargue los datos nuevos,  2) los guarde en el proyecto,  3) publique la app en internet.
+name: Actualizar datos y publicar Atlas
+
+on:
+  schedule:
+    - cron: '30 22 * * *' # todos los días a las 22:30 UTC (tras el cierre de la bolsa de EE. UU.)
+  push:
+    branches: [main]
+  workflow_dispatch: # permite lanzarlo a mano desde la web de GitHub
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publicar
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar librerías
+        run: npm ci
+
+      - name: Descargar los datos del día
+        run: npm run datos
+        continue-on-error: true # si una fuente falla, se publica con los datos anteriores
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+
+      - name: Guardar los datos nuevos en el proyecto
+        run: |
+          git config user.name "Atlas (automático)"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/datos
+          git diff --cached --quiet || git commit -m "Datos del $(date -u +%Y-%m-%d)"
+          git push
+
+      - name: Empaquetar la app
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Publicar
+        id: despliegue
+        uses: actions/deploy-pages@v4
