@@ -10,7 +10,8 @@
     "datos:todo": "node recolector/recolectar.mjs --todo",
     "comprobar": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "fondos": "node recolector/fondos.mjs"
   },
   "dependencies": {
     "d3-geo": "^3.1.2",
@@ -30,6 +31,8 @@
     "@types/react-dom": "^19.3.0",
     "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^6.3.0",
+    "pdfjs-dist": "^6.5.438",
+    "read-excel-file": "^9.3.17",
     "typescript": "^7.0.2",
     "vite": "^8.3.8"
   }

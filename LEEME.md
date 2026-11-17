@@ -1,7 +1,7 @@
 # Atlas — guía rápida
 
 Atlas es una app web para entender la economía mundial de forma visual.
-Esta es la **fase 1**: mapa mundial real + ficha de país con datos reales.
+Hechas la **fase 1** (mapa mundial real + ficha de país) y la **fase 2** (fondos y ETFs con buscador inverso).
 
 ## Cómo abrir la app en tu ordenador
 
@@ -68,9 +68,34 @@ D:\Atlas
 └─ node_modules/        librerías (no se toca; se regenera con «npm install»)
 ```
 
+## Fondos y ETFs (fase 2)
+
+La sección «Fondos y ETFs» muestra qué empresas lleva dentro cada fondo y permite buscar al revés:
+escribes una empresa y ves qué fondos la tienen y con qué peso.
+
+**De dónde salen los datos**
+
+- **Trade Republic:** de su PDF oficial «Universo de inversión» (lista de todo lo que se puede comprar allí).
+- **MyInvestor:** no publica su catálogo, así que hay una lista manual: `catalogos/myinvestor.csv`.
+  Ábrela con el Bloc de notas y cambia `no` por `si` en los fondos que compruebes en tu app.
+  Hasta entonces salen como «por confirmar».
+- **Carteras:** de los archivos que publican las gestoras iShares, Xtrackers y SPDR.
+  Vanguard, Amundi y Fidelity aparecen en la lista pero todavía sin cartera.
+- **Comisiones:** escritas a mano en `catalogos/fondos.csv`. Pueden estar desactualizadas:
+  compruébalas siempre en el documento oficial del fondo.
+
+**Añadir un fondo:** añade una línea a `catalogos/fondos.csv` (las instrucciones están al principio del archivo).
+
+**Actualizar las carteras a mano:**
+
+```
+npm run fondos
+```
+
+No suele hacer falta: GitHub lo hace solo cada lunes.
+
 ## Lo que todavía no hace (fases siguientes)
 
-- **Fase 2:** fondos y ETFs de MyInvestor y Trade Republic + buscador inverso.
 - **Fase 3:** ficha de empresa, precios históricos, «Mi lista» y alertas.
 - **Fase 4:** noticias explicadas, sectores y «¿por qué se ha movido?».
 - **Fase 5:** radar de emergentes, tiempo real y X.

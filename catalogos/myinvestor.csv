@@ -1,0 +1,20 @@
+# LISTA DE FONDOS Y ETFs DISPONIBLES EN MYINVESTOR. La mantienes tú.
+# MyInvestor no publica un listado descargable, así que esta lista es manual.
+# Una línea por fondo:   isin ; nombre ; confirmado (si / no)
+# - Pon "si" cuando hayas comprobado en tu app de MyInvestor que el fondo se puede contratar.
+# - Los que están en "no" son una propuesta inicial SIN COMPROBAR: Atlas los marca como "por confirmar".
+# - Para que Atlas muestre datos de un fondo, su ISIN también tiene que estar en fondos.csv.
+isin;nombre;confirmado
+IE00B03HD191;Vanguard Global Stock Index Fund;no
+IE0032126645;Vanguard U.S. 500 Stock Index Fund;no
+IE0031786142;Vanguard Emerging Markets Stock Index Fund;no
+IE00B42W3S00;Vanguard Global Small-Cap Index Fund;no
+IE00BYX5NX33;Fidelity MSCI World Index Fund P;no
+LU0996182563;Amundi Index MSCI World AE;no
+IE00BD0NCM55;iShares Developed World Index Fund (IE) D;no
+IE00B4L5Y983;iShares Core MSCI World;no
+IE00B5BMR087;iShares Core S&P 500 (Acc);no
+IE00BKM4GZ66;iShares Core MSCI EM IMI;no
+IE00BK5BQT80;Vanguard FTSE All-World (Acc);no
+IE00BJ0KDQ92;Xtrackers MSCI World (Acc);no
+IE00B53SZB19;iShares NASDAQ 100;no

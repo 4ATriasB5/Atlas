@@ -4,7 +4,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ClaveCapa } from './capas';
 import { type Datos, cargarDatos, fechaCorta, paisesConDatos, pctSigno } from './datos';
+import { FichaFondo } from './FichaFondo';
 import { FichaPais } from './FichaPais';
+import { PantallaFondos } from './PantallaFondos';
 import { PantallaMapa } from './PantallaMapa';
 
 function recordar(clave: string, porDefecto: string): string {
@@ -36,7 +38,6 @@ function useRuta(): string {
 }
 
 const PROXIMAS = [
-  ['Fondos y ETFs', 'Fase 2'],
   ['Empresas', 'Fase 3'],
   ['Mi lista', 'Fase 3'],
   ['Sectores', 'Fase 4'],
@@ -82,6 +83,9 @@ export function App() {
 
   const enFicha = ruta.startsWith('/pais/');
   const isoFicha = enFicha ? ruta.split('/')[2]?.toUpperCase() : null;
+  const enFondos = ruta === '/fondos' || ruta.startsWith('/fondo/');
+  const isinFondo = ruta.startsWith('/fondo/') ? ruta.split('/')[2]?.toUpperCase() : null;
+  const enMapa = !enFicha && !enFondos;
   const hayBolsa = !!datos && Object.keys(datos.bolsas).length > 0;
   // Si hay datos de bolsa, el mapa arranca con esa capa; si no, con el crecimiento del PIB.
   const capaActiva: ClaveCapa = capa ?? (hayBolsa ? 'bolsa' : 'crecimiento');
@@ -149,11 +153,14 @@ export function App() {
 
       <div className="cuerpo">
         <nav className="menu" aria-label="Secciones">
-          <a href="#/" className={!enFicha ? 'activo' : ''} aria-current={!enFicha ? 'page' : undefined}>
+          <a href="#/" className={enMapa ? 'activo' : ''} aria-current={enMapa ? 'page' : undefined}>
             Mapa del mundo
           </a>
           <a href={`#/pais/${seleccion}`} className={enFicha ? 'activo' : ''} aria-current={enFicha ? 'page' : undefined}>
             Países
+          </a>
+          <a href="#/fondos" className={enFondos ? 'activo' : ''} aria-current={enFondos ? 'page' : undefined}>
+            Fondos y ETFs
           </a>
           {PROXIMAS.map(([nombre, fase]) => (
             <span key={nombre} className="menu-proximo" aria-disabled="true">
@@ -170,9 +177,10 @@ export function App() {
               <p>{error}</p>
             </section>
           )}
-          {!datos && !error && <section className="panel tenue">Cargando datos…</section>}
+          {!datos && !error && !enFondos && <section className="panel tenue">Cargando datos…</section>}
           {datos && enFicha && isoFicha && <FichaPais datos={datos} iso3={isoFicha} experto={experto} />}
-          {datos && !enFicha && (
+          {enFondos && !error && (isinFondo ? <FichaFondo isin={isinFondo} experto={experto} /> : <PantallaFondos experto={experto} />)}
+          {datos && enMapa && (
             <PantallaMapa
               datos={datos}
               experto={experto}

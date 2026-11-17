@@ -1,0 +1,64 @@
+# FONDOS Y ETFs QUE ANALIZA ATLAS. Puedes editar este archivo con el Bloc de notas o con Excel.
+# Una línea por fondo. Las columnas van separadas por punto y coma:
+#   isin ; nombre ; gestora ; tipo (ETF o Fondo) ; comisión anual en % ; región ; tema ; fuente de la cartera ; clave
+# - "comisión": escrita a mano el 17-nov-2026. Puede haber cambiado: compruébala en la web de la gestora.
+# - "fuente": de dónde se descarga la cartera. Vale: ishares, xtrackers, spdr o vacío (sin cartera todavía).
+# - "clave": número de producto en ishares.com (iShares) o símbolo en Alemania (SPDR). En Xtrackers no hace falta.
+# Para añadir un ETF de Xtrackers basta con su ISIN y poner "xtrackers" como fuente.
+isin;nombre;gestora;tipo;comision;region;tema;fuente;clave
+IE00B4L5Y983;iShares Core MSCI World;iShares;ETF;0,20;Mundo desarrollado;General;ishares;251882
+IE00B6R52259;iShares MSCI ACWI;iShares;ETF;0,20;Todo el mundo;General;ishares;251850
+IE00B5BMR087;iShares Core S&P 500 (Acc);iShares;ETF;0,07;EE. UU.;General;ishares;253743
+IE0031442068;iShares Core S&P 500 (Dist);iShares;ETF;0,07;EE. UU.;General;ishares;251900
+IE00B53SZB19;iShares NASDAQ 100;iShares;ETF;0,30;EE. UU.;Tecnología;ishares;253741
+IE00B3WJKG14;iShares S&P 500 Information Technology;iShares;ETF;0,15;EE. UU.;Tecnología;ishares;280510
+IE00BKM4GZ66;iShares Core MSCI EM IMI;iShares;ETF;0,18;Emergentes;General;ishares;264659
+IE00B0M63177;iShares MSCI EM (Dist);iShares;ETF;0,18;Emergentes;General;ishares;251857
+IE00B4K48X80;iShares Core MSCI Europe;iShares;ETF;0,12;Europa;General;ishares;251861
+IE0008471009;iShares Core EURO STOXX 50 (Dist);iShares;ETF;0,10;Zona euro;General;ishares;251781
+DE0005933931;iShares Core DAX;iShares;ETF;0,16;Alemania;General;ishares;251464
+IE00B1XNHC34;iShares Global Clean Energy;iShares;ETF;0,65;Todo el mundo;Energía limpia;ishares;251911
+IE00BYZK4552;iShares Automation & Robotics;iShares;ETF;0,40;Todo el mundo;Robótica;ishares;284219
+IE00BYZK4883;iShares Digitalisation;iShares;ETF;0,40;Todo el mundo;Digitalización;ishares;284217
+IE00BJ0KDQ92;Xtrackers MSCI World (Acc);Xtrackers;ETF;0,12;Mundo desarrollado;General;xtrackers;
+IE00BK1PV551;Xtrackers MSCI World (Dist);Xtrackers;ETF;0,12;Mundo desarrollado;General;xtrackers;
+IE00BGHQ0G80;Xtrackers MSCI AC World ESG Screened;Xtrackers;ETF;;Todo el mundo;Sostenible;xtrackers;
+IE00BZ02LR44;Xtrackers MSCI World ESG;Xtrackers;ETF;0,20;Mundo desarrollado;Sostenible;xtrackers;
+IE00BTJRMP35;Xtrackers MSCI Emerging Markets;Xtrackers;ETF;0,18;Emergentes;General;xtrackers;
+IE00BM67HT60;Xtrackers MSCI World Information Technology;Xtrackers;ETF;0,25;Mundo desarrollado;Tecnología;xtrackers;
+IE00BM67HK77;Xtrackers MSCI World Health Care;Xtrackers;ETF;0,25;Mundo desarrollado;Salud;xtrackers;
+IE00BM67HM91;Xtrackers MSCI World Energy;Xtrackers;ETF;0,25;Mundo desarrollado;Energía;xtrackers;
+IE00BM67HL84;Xtrackers MSCI World Financials;Xtrackers;ETF;0,25;Mundo desarrollado;Finanzas;xtrackers;
+IE00BL25JP72;Xtrackers MSCI World Momentum;Xtrackers;ETF;0,25;Mundo desarrollado;Estrategia;xtrackers;
+IE00BL25JL35;Xtrackers MSCI World Quality;Xtrackers;ETF;0,25;Mundo desarrollado;Estrategia;xtrackers;
+IE00BL25JM42;Xtrackers MSCI World Value;Xtrackers;ETF;0,25;Mundo desarrollado;Estrategia;xtrackers;
+IE00BGV5VN51;Xtrackers Artificial Intelligence & Big Data;Xtrackers;ETF;0,35;Todo el mundo;Inteligencia artificial;xtrackers;
+IE00BJZ2DD79;Xtrackers Russell 2000;Xtrackers;ETF;0,30;EE. UU.;Empresas pequeñas;xtrackers;
+IE00BLNMYC90;Xtrackers S&P 500 Equal Weight;Xtrackers;ETF;0,20;EE. UU.;General;xtrackers;
+LU0274211480;Xtrackers DAX;Xtrackers;ETF;0,09;Alemania;General;xtrackers;
+LU0380865021;Xtrackers Euro STOXX 50;Xtrackers;ETF;0,09;Zona euro;General;xtrackers;
+LU0328475792;Xtrackers STOXX Europe 600;Xtrackers;ETF;0,20;Europa;General;xtrackers;
+LU0839027447;Xtrackers Nikkei 225;Xtrackers;ETF;0,09;Japón;General;xtrackers;
+LU0292109856;Xtrackers MSCI China A;Xtrackers;ETF;;China;General;xtrackers;
+;SPDR MSCI ACWI;SPDR (State Street);ETF;0,12;Todo el mundo;General;spdr;spyy
+;SPDR MSCI ACWI IMI;SPDR (State Street);ETF;0,17;Todo el mundo;General;spdr;spyi
+;SPDR MSCI World;SPDR (State Street);ETF;0,12;Mundo desarrollado;General;spdr;sppw
+;SPDR S&P 500;SPDR (State Street);ETF;0,03;EE. UU.;General;spdr;spy5
+;SPDR MSCI Emerging Markets;SPDR (State Street);ETF;0,18;Emergentes;General;spdr;spym
+;SPDR Russell 2000 U.S. Small Cap;SPDR (State Street);ETF;0,30;EE. UU.;Empresas pequeñas;spdr;zprr
+;SPDR MSCI USA Small Cap Value Weighted;SPDR (State Street);ETF;0,30;EE. UU.;Empresas pequeñas;spdr;zprv
+;SPDR MSCI Europe Small Cap Value Weighted;SPDR (State Street);ETF;0,30;Europa;Empresas pequeñas;spdr;zprx
+;SPDR S&P U.S. Dividend Aristocrats;SPDR (State Street);ETF;0,35;EE. UU.;Dividendos;spdr;spyd
+;SPDR S&P Euro Dividend Aristocrats;SPDR (State Street);ETF;0,30;Zona euro;Dividendos;spdr;spyw
+IE00BK5BQT80;Vanguard FTSE All-World (Acc);Vanguard;ETF;0,22;Todo el mundo;General;;
+IE00B3RBWM25;Vanguard FTSE All-World (Dist);Vanguard;ETF;0,22;Todo el mundo;General;;
+IE00BFMXXD54;Vanguard S&P 500 (Acc);Vanguard;ETF;0,07;EE. UU.;General;;
+IE00B3XXRP09;Vanguard S&P 500 (Dist);Vanguard;ETF;0,07;EE. UU.;General;;
+LU1681043599;Amundi MSCI World;Amundi;ETF;0,38;Mundo desarrollado;General;;
+IE00B03HD191;Vanguard Global Stock Index Fund;Vanguard;Fondo;0,18;Mundo desarrollado;General;;
+IE0032126645;Vanguard U.S. 500 Stock Index Fund;Vanguard;Fondo;0,10;EE. UU.;General;;
+IE0031786142;Vanguard Emerging Markets Stock Index Fund;Vanguard;Fondo;0,23;Emergentes;General;;
+IE00B42W3S00;Vanguard Global Small-Cap Index Fund;Vanguard;Fondo;0,29;Mundo desarrollado;Empresas pequeñas;;
+IE00BYX5NX33;Fidelity MSCI World Index Fund P;Fidelity;Fondo;0,12;Mundo desarrollado;General;;
+LU0996182563;Amundi Index MSCI World AE;Amundi;Fondo;0,30;Mundo desarrollado;General;;
+IE00BD0NCM55;iShares Developed World Index Fund (IE) D;iShares;Fondo;0,12;Mundo desarrollado;General;;
