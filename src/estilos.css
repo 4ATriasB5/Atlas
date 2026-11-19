@@ -1392,3 +1392,13 @@ select {
   flex: none;
   max-width: none;
 }
+
+/* Selector de sector en «Noticias» */
+.boton-capa.boton-pequeño {
+  min-height: 34px;
+  padding: 0 12px;
+}
+.filtro-rotulo {
+  align-self: center;
+  margin: 0 4px 0 0;
+}

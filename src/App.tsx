@@ -100,7 +100,15 @@ export function App() {
     }
   }
   const enLista = ruta === '/lista';
-  const enNoticias = ruta === '/noticias';
+  const enNoticias = ruta === '/noticias' || ruta.startsWith('/noticias/');
+  let sectorNoticias: string | null = null;
+  if (ruta.startsWith('/noticias/')) {
+    try {
+      sectorNoticias = decodeURIComponent(ruta.slice('/noticias/'.length));
+    } catch {
+      sectorNoticias = null;
+    }
+  }
   const enSectores = ruta === '/sectores' || ruta.startsWith('/sectores/');
   let sectorElegido: string | null = null;
   if (ruta.startsWith('/sectores/')) {
@@ -222,7 +230,7 @@ export function App() {
           {datos && enFicha && isoFicha && <FichaPais datos={datos} iso3={isoFicha} experto={experto} />}
           {enFondos && !error && (isinFondo ? <FichaFondo isin={isinFondo} experto={experto} /> : <PantallaFondos experto={experto} />)}
           {enEmpresas && !error && (claveEmpresa ? <FichaEmpresa clave={claveEmpresa} experto={experto} /> : <PantallaEmpresas experto={experto} soloLista={false} />)}
-          {enNoticias && !error && <PantallaNoticias experto={experto} />}
+          {enNoticias && !error && <PantallaNoticias experto={experto} sector={sectorNoticias} />}
           {enSectores && !error && <PantallaSectores experto={experto} sector={sectorElegido} />}
           {enLista && !error && <PanelAvisos />}
           {enLista && !error && <PantallaEmpresas experto={experto} soloLista />}

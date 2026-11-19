@@ -211,6 +211,9 @@ function FichaSector({ s, mercado, experto }: { s: Sector; mercado: number | nul
       <section className="panel">
         <h2>El sector en 30 segundos</h2>
         <p className="resumen">{frases.join(' ')}</p>
+        <p className="tenue pequeño fuente">
+          <a href={`#/noticias/${encodeURIComponent(s.nombre)}`}>Ver las noticias de este sector</a>
+        </p>
       </section>
 
       <div className="dos-columnas">

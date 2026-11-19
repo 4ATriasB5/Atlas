@@ -20,6 +20,21 @@ import {
 
 const AVISO_RUMOR =
   'Sin confirmar: el titular habla de rumores, de fuentes anónimas o de algo que podría pasar. No lo tomes como un hecho hasta que la empresa o un organismo oficial lo confirme.';
+/** Ejemplos, en español, de las palabras que busca el recolector para cada sector (las listas reales, en inglés, están en recolector/noticias.mjs). */
+const PALABRAS_SECTOR: Record<string, string> = {
+  Tecnología: 'chips, inteligencia artificial, centros de datos…',
+  Comunicación: 'publicidad, streaming, telecomunicaciones…',
+  'Consumo no esencial': 'ventas de comercios, coches, gasto de los consumidores…',
+  Salud: 'FDA, farmacéuticas, Medicare, vacunas…',
+  'Consumo básico': 'precios de los alimentos, supermercados, bebidas…',
+  Finanzas: 'bancos, tipos de interés, Reserva Federal, aseguradoras…',
+  Energía: 'petróleo, gas natural, OPEP, refinerías…',
+  Industria: 'aerolíneas, defensa, fábricas, aranceles, transporte…',
+  Materiales: 'oro, cobre, acero, minería…',
+  Inmobiliario: 'vivienda, hipotecas, alquileres, oficinas…',
+  'Suministros (luz, agua, gas)': 'electricidad, energía solar y eólica, nuclear…',
+};
+
 const AVISO_OPINION = 'Opinión: el artículo da la opinión o la recomendación de alguien, no cuenta un hecho.';
 
 function Etiquetas({ n, experto }: { n: Noticia; experto: boolean }) {
@@ -176,7 +191,7 @@ function Comparacion({ nombre, v }: { nombre: string; v: number }) {
 
 // ───────────── Pantalla «Noticias» ─────────────
 
-export function PantallaNoticias({ experto }: { experto: boolean }) {
+export function PantallaNoticias({ experto, sector: pedido }: { experto: boolean; sector: string | null }) {
   const [datos, setDatos] = useState<DatosEmpresas | null | undefined>(undefined);
   const [indice, setIndice] = useState<DatosNoticias | null | undefined>(undefined);
   const [deEmpresas, setDeEmpresas] = useState<Map<string, Noticia[]>>(new Map());
@@ -188,15 +203,27 @@ export function PantallaNoticias({ experto }: { experto: boolean }) {
     cargarNoticias().then(setIndice);
   }, []);
 
+  // Sectores, de mayor a menor peso en la bolsa. Si el de la dirección no existe, se muestran todos.
+  const sectores = useMemo(() => {
+    const peso = new Map<string, number>();
+    for (const e of datos?.empresas ?? []) if (e.s) peso.set(e.s, (peso.get(e.s) ?? 0) + e.pesoSP);
+    return [...peso.entries()].sort((a, b) => b[1] - a[1]).map(([s]) => s);
+  }, [datos]);
+  const sector = pedido && sectores.includes(pedido) ? pedido : null;
+  const delSector = (e: EmpresaBolsa) => !sector || e.s === sector;
+
   // Las que más se han movido: 5 que más suben y 5 que más bajan.
   const movidas = useMemo(() => {
     if (!datos) return { suben: [], bajan: [] };
-    const con = datos.empresas.filter((e) => typeof e.cambio === 'number');
+    const con = datos.empresas.filter((e) => typeof e.cambio === 'number' && (!sector || e.s === sector));
     const orden = [...con].sort((a, b) => b.cambio! - a.cambio!);
-    return { suben: orden.slice(0, 5), bajan: orden.slice(-5).reverse() };
-  }, [datos]);
+    return { suben: orden.filter((e) => e.cambio! > 0).slice(0, 5), bajan: orden.filter((e) => e.cambio! < 0).slice(-5).reverse() };
+  }, [datos, sector]);
 
-  const deLista = useMemo(() => (datos ? lista.map((t) => datos.porSimbolo.get(t)).filter((e): e is EmpresaBolsa => !!e).slice(0, 30) : []), [datos, lista]);
+  const deLista = useMemo(
+    () => (datos ? lista.map((t) => datos.porSimbolo.get(t)).filter((e): e is EmpresaBolsa => !!e && (!sector || e.s === sector)).slice(0, 30) : []),
+    [datos, lista, sector],
+  );
 
   useEffect(() => {
     const simbolos = [...movidas.suben, ...movidas.bajan, ...deLista].map((e) => e.t);
@@ -232,7 +259,7 @@ export function PantallaNoticias({ experto }: { experto: boolean }) {
   const en14 = new Date(Date.now() + 14 * 86_400_000).toISOString().slice(0, 10);
   const resultados = Object.entries(indice.resultados).flatMap(([t, rs]) => {
     const e = datos.porSimbolo.get(t);
-    return e && t !== 'GOOG' && t !== 'FOX' && t !== 'NWS' ? rs.map((r) => ({ e, r })) : [];
+    return e && delSector(e) && t !== 'GOOG' && t !== 'FOX' && t !== 'NWS' ? rs.map((r) => ({ e, r })) : [];
   });
   const presentados = resultados
     .filter(({ r }) => r.d >= hace7 && r.d <= hoy && r.bR !== null)
@@ -244,20 +271,42 @@ export function PantallaNoticias({ experto }: { experto: boolean }) {
     .slice(0, 10)
     .sort((a, b) => a.r.d.localeCompare(b.r.d));
 
+  const grupoSector = sector ? indice.porSector?.[sector] : undefined;
+  // (por si el archivo es de la versión anterior, que era una lista simple)
+  const noticiasSector = filtrar(Array.isArray(grupoSector) ? grupoSector : (grupoSector?.empresas ?? []));
+  const noticiasTema = filtrar(Array.isArray(grupoSector) ? [] : (grupoSector?.tema ?? []));
+  const empresaDeSector = (n: Noticia) => datos.porSimbolo.get((n as Noticia & { s?: string }).s ?? '');
+  const donde = sector ? `del sector ${sector}` : 'del S&P 500';
+
   return (
     <div className="ficha">
       <header>
-        <h1>Noticias</h1>
+        <h1>{sector ? `Noticias · ${sector}` : 'Noticias'}</h1>
         <p className="tenue">
           Qué ha pasado en la bolsa, quién se ha movido más y por qué. Actualizado cada noche
           {indice.actualizado ? ` (último: ${cuando(Date.parse(indice.actualizado) / 1000)})` : ''}.
         </p>
       </header>
 
+      <div className="grupo-botones" role="group" aria-label="Elegir sector">
+        <span className="rotulo filtro-rotulo">Sector:</span>
+        {[null, ...sectores].map((s) => (
+          <button
+            key={s ?? 'todos'}
+            type="button"
+            className={`boton-capa boton-pequeño ${s === sector ? 'activo' : ''}`}
+            aria-pressed={s === sector}
+            onClick={() => (window.location.hash = s ? `#/noticias/${encodeURIComponent(s)}` : '#/noticias')}
+          >
+            {s ?? 'Todos'}
+          </button>
+        ))}
+      </div>
+
       <section className="panel">
         <h2>Las que más se han movido</h2>
         <p className="tenue subtitulo">
-          Empresas del S&P 500 que más han subido y bajado en la última sesión, con la causa más probable
+          Empresas {donde} que más han subido y bajado en la última sesión, con la causa más probable
         </p>
         <div className="dos-columnas sin-margen">
           {(['suben', 'bajan'] as const).map((lado) => (
@@ -300,7 +349,7 @@ export function PantallaNoticias({ experto }: { experto: boolean }) {
       {deLista.length > 0 && (
         <section className="panel">
           <h2>De tu lista</h2>
-          <p className="tenue subtitulo">Lo último sobre las empresas que sigues</p>
+          <p className="tenue subtitulo">Lo último sobre las empresas que sigues{sector ? ` de este sector` : ''}</p>
           {noticiasLista.length ? <ListaNoticias noticias={noticiasLista} experto={experto} empresa={empresaDe} /> : <p className="aviso">No hay noticias recientes de tus empresas.</p>}
         </section>
       )}
@@ -328,12 +377,12 @@ export function PantallaNoticias({ experto }: { experto: boolean }) {
               ))}
             </ul>
           ) : (
-            <p className="aviso">Ninguna gran empresa ha presentado resultados en los últimos 7 días.</p>
+            <p className="aviso">Ninguna gran empresa {sector ? 'del sector ' : ''}ha presentado resultados en los últimos 7 días.</p>
           )}
         </section>
         <section className="panel">
           <h2>Próximos resultados</h2>
-          <p className="tenue subtitulo">Las mayores empresas que presentan en las próximas dos semanas</p>
+          <p className="tenue subtitulo">Las mayores empresas {sector ? 'del sector ' : ''}que presentan en las próximas dos semanas</p>
           {proximos.length ? (
             <ul className="avisos">
               {proximos.map(({ e, r }) => (
@@ -350,17 +399,50 @@ export function PantallaNoticias({ experto }: { experto: boolean }) {
               ))}
             </ul>
           ) : (
-            <p className="aviso">Ninguna gran empresa presenta resultados en las próximas dos semanas.</p>
+            <p className="aviso">Ninguna gran empresa {sector ? 'del sector ' : ''}presenta resultados en las próximas dos semanas.</p>
           )}
         </section>
       </div>
 
-      <section className="panel">
-        <h2>Noticias del mercado</h2>
-        <p className="tenue subtitulo">Economía, política y bolsa en general</p>
-        <ListaNoticias noticias={filtrar(indice.mercado)} experto={experto} />
-        <LeyendaNoticias />
-      </section>
+      {sector ? (
+        <>
+          <section className="panel">
+            <h2>Lo importante del sector</h2>
+            <p className="tenue subtitulo">
+              Noticias que afectan a todo el sector, aunque no sean de una gran empresa
+            </p>
+            {noticiasTema.length ? (
+              <ListaNoticias noticias={noticiasTema} experto={experto} />
+            ) : (
+              <p className="aviso">No hemos encontrado noticias generales de este sector en la última semana.</p>
+            )}
+            <p className="tenue pequeño fuente">
+              Se eligen buscando en los titulares palabras del sector ({PALABRAS_SECTOR[sector] ?? 'temas propios del sector'}),
+              así que alguna vez se cuela una que no lo es.
+            </p>
+          </section>
+          <section className="panel">
+            <h2>Lo más relevante de sus empresas</h2>
+            <p className="tenue subtitulo">
+              Primero las de las empresas más grandes, las que cuentan un hecho (no una opinión), las más recientes y las
+              de empresas que se han movido mucho. Como mucho 3 por empresa.
+            </p>
+            {noticiasSector.length ? (
+              <ListaNoticias noticias={noticiasSector} experto={experto} empresa={empresaDeSector} />
+            ) : (
+              <p className="aviso">No hay noticias recientes de este sector{indice.porSector ? '' : ' (se preparan esta noche)'}.</p>
+            )}
+            <LeyendaNoticias />
+          </section>
+        </>
+      ) : (
+        <section className="panel">
+          <h2>Noticias del mercado</h2>
+          <p className="tenue subtitulo">Economía, política y bolsa en general</p>
+          <ListaNoticias noticias={filtrar(indice.mercado)} experto={experto} />
+          <LeyendaNoticias />
+        </section>
+      )}
 
       <p className="tenue pequeño">
         Atlas solo muestra el titular, el medio y el enlace; el contenido es de cada medio. Nada de esta pantalla es una

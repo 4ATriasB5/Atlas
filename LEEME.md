@@ -138,6 +138,10 @@ abrir la app, con el precio de cierre del día.
 
 - **Noticias:** pantalla nueva con las empresas que más se han movido, los resultados de la semana, los próximos
   resultados, las noticias de «Mi lista» y las del mercado. Cada ficha de empresa tiene también sus noticias.
+  Arriba se puede elegir un **sector**: entonces todo se limita a sus empresas y salen dos listas más:
+  «Lo importante del sector» (noticias que afectan a todo el sector, buscadas por palabras como *oil* u *OPEC*; la
+  lista `TEMAS` de `recolector/noticias.mjs` se puede ampliar) y «Lo más relevante de sus empresas» (ordenadas por
+  puntos: tamaño de la empresa, hechos antes que opiniones, lo reciente y las empresas que más se han movido).
   - **Fuente:** Finnhub (la misma clave). Atlas solo guarda el titular, el medio y el enlace a la noticia original.
     Los titulares están en inglés, tal como los publica cada medio.
   - **Etiquetas:** «Sin confirmar» (rumores, fuentes anónimas, «podría»), «Opinión» (alguien opina o recomienda) y

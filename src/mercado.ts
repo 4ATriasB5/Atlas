@@ -37,6 +37,11 @@ export interface DatosNoticias {
   actualizado: string;
   mercado: Noticia[];
   resultados: Record<string, Resultado[]>;
+  /**
+   * noticias de cada sector: «empresas» = lo más relevante de sus empresas («s» es el símbolo);
+   * «tema» = noticias del sector en general (petróleo, tipos de interés, FDA…)
+   */
+  porSector?: Record<string, { empresas: (Noticia & { s: string })[]; tema: Noticia[] }>;
 }
 
 let promesa: Promise<DatosNoticias | null> | null = null;

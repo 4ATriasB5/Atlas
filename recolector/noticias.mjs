@@ -65,7 +65,7 @@ const TIPOS = [
   ['Compra o fusión', /\b(acquir\w*|acquisition|merger|merge|takeover|buyout|(agrees|deal|offer|bid) to buy|bid for|stake in|spin-?off)\b/i],
   ['Justicia y reguladores', /\b(lawsuit|sues?|sued|court|judge|antitrust|regulators?|regulatory|FTC|DOJ|probe|investigation|fined?|settle\w*|ban|tariffs?|sanctions?)\b/i],
   ['Directivos', /\b(CEO|CFO|chief executive|executives?|resign\w*|steps? down|appoint\w*|chairman|chairwoman|names new|successor)\b/i],
-  ['Analistas', /\b(upgrades?|upgraded|downgrades?|downgraded|price target|analysts?|rating|outperform|underperform|overweight|underweight|initiates? coverage)\b/i],
+  ['Analistas', /\b(upgrades?|upgraded|downgrades?|downgraded|price targets?|analysts?|rating|outperform|underperform|overweight|underweight|initiates? coverage)\b/i],
   ['Dividendos y recompras', /\b(dividends?|buybacks?|repurchase\w*|share split|stock split)\b/i],
   ['Productos', /\b(launch\w*|unveil\w*|introduc\w*|new (product|model|chip|phone|drug|service)|FDA|approval|approved|trial)\b/i],
   ['La acción en bolsa', /\b(stocks?|shares) (\w+ )?(falls?|fell|drops?|dropped|jumps?|jumped|soars?|soared|surges?|surged|slides?|slid|sinks?|sank|rall(y|ies|ied)|tumbles?|tumbled|plunges?|plunged|climbs?|climbed|rises?|rose|gains?|gained|slumps?|slumped)\b|\b(up|down|soars?|jumps?|falls?|drops?|sinks?|slides?|surges?|climbs?|rises?|tumbles?|plunges?) (more than |over |nearly |about )?\d+(\.\d+)?%/i],
@@ -260,10 +260,122 @@ async function main() {
       actualizado: new Date(ahora).toISOString(),
       mercado: generales ? mercado : (anterior?.mercado ?? []),
       resultados: calendario ? resultados : (anterior?.resultados ?? {}),
+      porSector: await agruparPorSector(todas, (generales ?? []).map(limpiar).filter(Boolean)),
     }),
     'utf8',
   );
   console.log('   guardado noticias.json');
+}
+
+// ───────────────────────── Noticias por sector ─────────────────────────
+
+// Temas de cada sector: palabras que, si salen en un titular, hacen que la noticia sea del sector aunque no
+// nombre a ninguna gran empresa (el precio del petróleo, los tipos de interés, la FDA…). Se pueden ampliar.
+const TEMAS = {
+  'Tecnología': /\b(semiconductors?|chips?|chipmakers?|AI (spending|boom|bubble|stocks|infrastructure)|artificial intelligence|data cent(er|re)s?|cloud computing|software stocks|tech stocks|tech sector|export controls?)\b/i,
+  'Comunicación': /\b(streaming|advertising|ad market|ad spending|telecoms?|5G|social media|media stocks|box office|wireless carriers?|broadband)\b/i,
+  'Consumo no esencial': /\b(retail sales|consumer spending|retailers?|holiday (shopping|sales|season)|Black Friday|Cyber Monday|automakers?|car sales|auto sales|electric vehicles?|EV (sales|makers?|demand)|homebuilders?|travel demand|cruise|restaurants?)\b/i,
+  Salud: /\b(FDA|drugmakers?|pharma\w*|biotechs?|Medicare|Medicaid|health insurers?|drug pric\w*|vaccines?|obesity drugs?|GLP-1|hospitals?|healthcare stocks|health care stocks)\b/i,
+  'Consumo básico': /\b(food prices|grocer\w*|consumer staples|packaged food|beverages?|tobacco|supermarkets?|egg prices|cocoa|coffee prices)\b/i,
+  Finanzas: /\b(banks?(?! of America)|banking|lenders?|Federal Reserve|Fed (chair|officials?|meeting|minutes|rate)|rate cuts?|rate hikes?|interest rates?|Treasury yields?|bond yields?|credit cards?|insurers?|brokerages?|private credit|bank stocks)\b/i,
+  'Energía': /\b(oil|crude|OPEC\+?|natural gas|LNG|gasoline|refiner(y|ies|s)|drilling|shale|Brent|WTI|barrels?|energy stocks)\b/i,
+  Industria: /\b(airlines?|aerospace|defen[cs]e (spending|contractors?|stocks|budget)|Pentagon|manufacturing|factory|factories|freight|railroads?|trucking|shipping|infrastructure|tariffs?|industrial stocks|jobs report|payrolls)\b/i,
+  Materiales: /\b(copper|gold|silver|steel|alumin(um|ium)|lithium|mining|miners|chemicals?|fertili[sz]ers?|commodit(y|ies)|iron ore|rare earths?)\b/i,
+  Inmobiliario: /\b(real estate|REITs?|housing (market|starts)|home sales|home prices|mortgage rates?|commercial property|office (space|market|vacanc\w*)|rents?|landlords?|data center REIT)\b/i,
+  'Suministros (luz, agua, gas)': /\b(utilit(y|ies)|power grid|electricity|power (prices|demand|plants?)|nuclear (power|energy|plant)|renewables?|solar|wind (power|farms?)|electric bills?)\b/i,
+};
+
+const ANALISTAS = TIPOS.find(([t]) => t === 'Analistas')[1];
+const ACCION ='La acción en bolsa';
+/** Puntos de una noticia: hechos antes que opiniones, y lo reciente antes que lo de hace días. */
+function puntosNoticia(n, ahora) {
+  let p = 0;
+  if (n.tipo !== 'Otras') p += n.tipo === ACCION ? 1 : 2;
+  if (n.opinion) p -= 3;
+  if (n.rumor) p -= 1;
+  const horas = (ahora / 1000 - n.d) / 3600;
+  p += horas < 24 ? 2 : horas < 48 ? 1 : 0;
+  return p;
+}
+
+/**
+ * Noticias de cada sector, en dos listas:
+ *  - empresas: lo más relevante de sus empresas (como mucho 3 por empresa). Suman puntos las empresas grandes,
+ *    las noticias que cuentan un hecho, las recientes y las de empresas que se han movido mucho ese día.
+ *  - tema: noticias del sector en general, aunque no hablen de una gran empresa (salen de las noticias del
+ *    mercado y de las de todas las empresas, buscando las palabras de TEMAS).
+ * Cada noticia de «empresas» lleva «s», el símbolo de su empresa.
+ */
+async function agruparPorSector(todas, generales = []) {
+  const ahora = Date.now();
+  const hace7 = ahora / 1000 - 7 * 86_400;
+  const leidas = new Map();
+  for (const e of todas) {
+    const ruta = path.join(CARPETA, `${e.t}.json`);
+    if (existsSync(ruta)) leidas.set(e.t, JSON.parse(await readFile(ruta, 'utf8')).n);
+  }
+
+  const sectores = [...new Set(todas.map((e) => e.s).filter(Boolean))];
+  const porSector = {};
+  for (const sector of sectores) {
+    const suyas = todas.filter((e) => e.s === sector).sort((a, b) => b.pesoSP - a.pesoSP);
+    // Puesto de cada empresa por tamaño dentro del sector
+    const puesto = new Map(suyas.map((e, i) => [e.t, i]));
+
+    const candidatas = [];
+    for (const e of suyas) {
+      const movida = typeof e.cambio === 'number' && Math.abs(e.cambio) >= 3;
+      const p = puesto.get(e.t);
+      const extra = (p < 5 ? 3 : p < 15 ? 2 : p < 30 ? 1 : 0);
+      const lista = (leidas.get(e.t) ?? [])
+        .filter((n) => n.d >= hace7)
+        .map((n) => ({ n: { ...n, s: e.t }, puntos: puntosNoticia(n, ahora) + extra + (movida && enSesion(n.d, e.fecha) ? 3 : 0) }))
+        .sort((a, b) => b.puntos - a.puntos || b.n.d - a.n.d)
+        .slice(0, 3);
+      candidatas.push(...lista);
+    }
+    const vistas = new Set();
+    const empresas = candidatas
+      .sort((a, b) => b.puntos - a.puntos || b.n.d - a.n.d)
+      .filter((x) => !vistas.has(x.n.t.toLowerCase()) && vistas.add(x.n.t.toLowerCase()))
+      .slice(0, 20)
+      .map((x) => x.n);
+
+    // Noticias del tema del sector (de cualquier origen), sin repetir las de arriba
+    const tema = TEMAS[sector];
+    const deTema = [];
+    if (tema) {
+      const origen = [...generales, ...[...leidas.values()].flat()];
+      for (const n of origen) {
+        // Las notas de analistas sobre una sola acción no son noticias del sector.
+        if (n.d < hace7 || !tema.test(n.t) || RELLENO.test(n.t) || ANALISTAS.test(n.t)) continue;
+        const clave = n.t.toLowerCase();
+        if (vistas.has(clave)) continue;
+        vistas.add(clave);
+        const { s: _s, ...limpia } = n;
+        deTema.push({ n: limpia, puntos: puntosNoticia(n, ahora) });
+      }
+    }
+    porSector[sector] = {
+      empresas,
+      tema: deTema
+        .sort((a, b) => b.puntos - a.puntos || b.n.d - a.n.d)
+        .slice(0, 15)
+        .map((x) => x.n),
+    };
+  }
+  console.log(`   noticias agrupadas en ${sectores.length} sectores`);
+  return porSector;
+}
+
+// «--solo-sectores» rehace solo la agrupación por sector con las noticias ya guardadas (sin descargar nada).
+if (process.argv.includes('--solo-sectores')) {
+  const todas = JSON.parse(await readFile(path.join(SALIDA, 'empresas.json'), 'utf8')).empresas;
+  const rutaIndice = path.join(SALIDA, 'noticias.json');
+  const indice = JSON.parse(await readFile(rutaIndice, 'utf8'));
+  indice.porSector = await agruparPorSector(todas, indice.mercado ?? []);
+  await writeFile(rutaIndice, JSON.stringify(indice), 'utf8');
+  process.exit(0);
 }
 
 main().catch((e) => {
