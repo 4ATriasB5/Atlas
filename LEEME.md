@@ -1,7 +1,8 @@
 # Atlas — guía rápida
 
 Atlas es una app web para entender la economía mundial de forma visual.
-Hechas la **fase 1** (mapa mundial real + ficha de país) la **fase 2** (fondos y ETFs con buscador inverso) y la **parte A de la fase 3** (empresas, buscador con filtros y «Mi lista»).
+Hechas la **fase 1** (mapa mundial real + ficha de país), la **fase 2** (fondos y ETFs con buscador inverso), la
+**fase 3** (empresas, «Mi lista» sincronizada y alertas) y la **fase 4** (noticias, sectores y «¿por qué se ha movido?»).
 
 ## Cómo abrir la app en tu ordenador
 
@@ -133,8 +134,30 @@ abrir la app, con el precio de cierre del día.
   no aparece y la lista se guarda solo en el dispositivo.
 - **Límite del plan gratuito:** Supabase envía pocos correos por hora (suficiente para uso personal).
 
+## Noticias, sectores y «¿por qué se ha movido?» (fase 4)
+
+- **Noticias:** pantalla nueva con las empresas que más se han movido, los resultados de la semana, los próximos
+  resultados, las noticias de «Mi lista» y las del mercado. Cada ficha de empresa tiene también sus noticias.
+  - **Fuente:** Finnhub (la misma clave). Atlas solo guarda el titular, el medio y el enlace a la noticia original.
+    Los titulares están en inglés, tal como los publica cada medio.
+  - **Etiquetas:** «Sin confirmar» (rumores, fuentes anónimas, «podría»), «Opinión» (alguien opina o recomienda) y
+    el tipo de noticia. Se ponen solas buscando palabras clave del titular, sin inteligencia artificial, así que alguna
+    vez fallan. Las listas de palabras están al principio de `recolector/noticias.mjs` y se pueden ampliar.
+- **Sectores:** agrupa las empresas del S&P 500 por sector, con lo que se ha movido cada uno hoy y en el año. Se
+  calcula con los datos de empresas que ya teníamos; no necesita nada nuevo.
+- **¿Por qué se ha movido?:** en cada ficha de empresa. Compara la empresa con su sector y con la bolsa en general,
+  y mira si ese día presentó resultados o hubo noticias suyas. Habla siempre de *posibles* causas.
+
+**Actualizar a mano** (unos 10 minutos; va después de `npm run empresas`):
+
+```
+npm run noticias
+```
+
+No suele hacer falta: GitHub lo hace solo cada noche.
+
 ## Lo que todavía no hace (fases siguientes)
 
 - **Avisos por correo o notificaciones en el móvil:** de momento los avisos solo se ven dentro de la app.
-- **Fase 4:** noticias explicadas, sectores y «¿por qué se ha movido?».
+- **Titulares traducidos al español:** necesitaría una IA de pago; se puede añadir más adelante.
 - **Fase 5:** radar de emergentes, tiempo real y X.

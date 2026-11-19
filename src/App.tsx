@@ -9,9 +9,11 @@ import { useLista } from './empresas';
 import { FichaEmpresa } from './FichaEmpresa';
 import { FichaFondo } from './FichaFondo';
 import { FichaPais } from './FichaPais';
+import { PantallaNoticias } from './Noticias';
 import { PantallaEmpresas } from './PantallaEmpresas';
 import { PantallaFondos } from './PantallaFondos';
 import { PantallaMapa } from './PantallaMapa';
+import { PantallaSectores } from './PantallaSectores';
 
 function recordar(clave: string, porDefecto: string): string {
   try {
@@ -42,7 +44,6 @@ function useRuta(): string {
 }
 
 const PROXIMAS = [
-  ['Sectores', 'Fase 4'],
   ['Radar de emergentes', 'Fase 5'],
 ];
 
@@ -99,7 +100,18 @@ export function App() {
     }
   }
   const enLista = ruta === '/lista';
-  const sinDatosGenerales = enFondos || enEmpresas || enLista; // estas pantallas cargan sus propios datos
+  const enNoticias = ruta === '/noticias';
+  const enSectores = ruta === '/sectores' || ruta.startsWith('/sectores/');
+  let sectorElegido: string | null = null;
+  if (ruta.startsWith('/sectores/')) {
+    try {
+      sectorElegido = decodeURIComponent(ruta.slice('/sectores/'.length));
+    } catch {
+      sectorElegido = null;
+    }
+  }
+  // estas pantallas cargan sus propios datos
+  const sinDatosGenerales = enFondos || enEmpresas || enLista || enNoticias || enSectores;
   const enMapa = !enFicha && !sinDatosGenerales;
   const hayBolsa = !!datos && Object.keys(datos.bolsas).length > 0;
   // Si hay datos de bolsa, el mapa arranca con esa capa; si no, con el crecimiento del PIB.
@@ -181,6 +193,12 @@ export function App() {
           <a href="#/empresas" className={enEmpresas ? 'activo' : ''} aria-current={enEmpresas ? 'page' : undefined}>
             Empresas
           </a>
+          <a href="#/noticias" className={enNoticias ? 'activo' : ''} aria-current={enNoticias ? 'page' : undefined}>
+            Noticias
+          </a>
+          <a href="#/sectores" className={enSectores ? 'activo' : ''} aria-current={enSectores ? 'page' : undefined}>
+            Sectores
+          </a>
           <a href="#/lista" className={enLista ? 'activo' : ''} aria-current={enLista ? 'page' : undefined}>
             Mi lista
             {miLista.length > 0 && <small> · {miLista.length}</small>}
@@ -204,6 +222,8 @@ export function App() {
           {datos && enFicha && isoFicha && <FichaPais datos={datos} iso3={isoFicha} experto={experto} />}
           {enFondos && !error && (isinFondo ? <FichaFondo isin={isinFondo} experto={experto} /> : <PantallaFondos experto={experto} />)}
           {enEmpresas && !error && (claveEmpresa ? <FichaEmpresa clave={claveEmpresa} experto={experto} /> : <PantallaEmpresas experto={experto} soloLista={false} />)}
+          {enNoticias && !error && <PantallaNoticias experto={experto} />}
+          {enSectores && !error && <PantallaSectores experto={experto} sector={sectorElegido} />}
           {enLista && !error && <PanelAvisos />}
           {enLista && !error && <PantallaEmpresas experto={experto} soloLista />}
           {datos && enMapa && (

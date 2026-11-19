@@ -64,7 +64,7 @@ export interface Historico {
   puntos: [string, number][];
 }
 
-async function leer<T>(archivo: string): Promise<T | null> {
+export async function leer<T>(archivo: string): Promise<T | null> {
   try {
     const r = await fetch(`${import.meta.env.BASE_URL}datos/${archivo}`, { cache: 'no-cache' });
     if (!r.ok) return null;

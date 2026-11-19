@@ -1214,3 +1214,181 @@ select {
     width: auto;
   }
 }
+
+/* ── Noticias, sectores y «¿por qué se ha movido?» (fase 4) ── */
+.noticias {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.noticia {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.noticia:last-child {
+  border-bottom: 0;
+}
+.noticia-titular {
+  color: var(--texto);
+  text-decoration: none;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.noticia-titular:hover {
+  color: var(--azul-claro);
+  text-decoration: underline;
+}
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.etiquetas:empty {
+  display: none;
+}
+.etiqueta {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--borde-fuerte);
+  color: var(--texto-2);
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+.etiqueta-rumor {
+  border-color: var(--naranja);
+  color: var(--naranja-claro);
+  cursor: help;
+}
+.etiqueta-opinion {
+  border-color: #6b7a8c;
+  background: #1b2330;
+  cursor: help;
+}
+.leyenda-noticias {
+  margin-top: 14px;
+  line-height: 1.9;
+}
+.con-margen-pequeño {
+  margin-top: 12px;
+}
+.porque {
+  border-left: 4px solid var(--borde-fuerte);
+}
+.porque-propio {
+  border-left-color: var(--naranja);
+}
+.porque-sector,
+.porque-mercado {
+  border-left-color: var(--azul);
+}
+.porque-cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.porque-cabecera strong {
+  font-size: 22px;
+}
+.porque-barras {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+  max-width: 520px;
+}
+.comparacion {
+  display: grid;
+  grid-template-columns: 110px 1fr 70px;
+  align-items: center;
+  gap: 10px;
+}
+.comparacion > :last-child {
+  text-align: right;
+}
+.barra-cambio {
+  position: relative;
+  display: block;
+  height: 10px;
+  min-width: 80px;
+  border-radius: 5px;
+  background: #1b2330;
+}
+.barra-cambio::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--borde-fuerte);
+}
+.barra-cambio i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.barra-cambio i.positiva {
+  background: var(--azul);
+  border-radius: 0 5px 5px 0;
+}
+.barra-cambio i.negativa {
+  background: var(--naranja);
+  border-radius: 5px 0 0 5px;
+}
+.tabla-sectores .col-barra {
+  width: 22%;
+  min-width: 100px;
+  vertical-align: middle;
+}
+.movidas,
+.lista-simple {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.movidas li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.movida-fila,
+.lista-simple li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.lista-simple li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.lista-simple li:last-child,
+.movidas li:last-child {
+  border-bottom: 0;
+}
+.sin-margen {
+  margin: 0;
+}
+.filtro-noticias {
+  flex-wrap: wrap;
+}
+@media (max-width: 720px) {
+  .comparacion {
+    grid-template-columns: 90px 1fr 60px;
+  }
+  .tabla-sectores .col-barra {
+    display: none;
+  }
+}
+/* Las cifras sueltas en una ficha (fuera de la cabecera) no deben estirarse a lo alto. */
+.ficha > .cifras {
+  flex: none;
+  max-width: none;
+}

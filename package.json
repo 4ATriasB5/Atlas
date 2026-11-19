@@ -12,7 +12,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "fondos": "node recolector/fondos.mjs",
-    "empresas": "node recolector/empresas.mjs"
+    "empresas": "node recolector/empresas.mjs",
+    "noticias": "node recolector/noticias.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",

@@ -61,6 +61,14 @@ jobs:
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
           SEC_CONTACTO: ${{ secrets.SEC_CONTACTO }}
 
+      - name: Descargar noticias y fechas de resultados (cada noche o al lanzarlo a mano)
+        if: github.event_name != 'push'
+        run: npm run noticias
+        timeout-minutes: 25
+        continue-on-error: true # si falla, se publica con las noticias anteriores
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+
       - name: Guardar los datos nuevos en el proyecto
         run: |
           git config user.name "Atlas (automático)"

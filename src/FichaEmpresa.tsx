@@ -16,6 +16,7 @@ import {
   tamaño,
 } from './empresas';
 import { type Carteras, type DatosFondos, cargarCarteras, cargarFondos } from './fondos';
+import { PorQueYNoticias } from './Noticias';
 import { BotonLista } from './PantallaEmpresas';
 
 const AZUL = '#4C9AFF';
@@ -360,6 +361,8 @@ export function FichaEmpresa({ clave, experto }: { clave: string; experto: boole
           )}
         </p>
       </section>
+
+      {datos && <PorQueYNoticias e={e} datos={datos} experto={experto} />}
 
       <section className="panel">
         <h2>Precio de la acción</h2>
